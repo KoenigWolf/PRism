@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, Palette, Type, Image, Sparkles, MessageSquare, Layout, Globe, Users, CheckSquare } from "lucide-react";
+import { ArrowLeft, Palette, Type, ImageIcon, Sparkles, MessageSquare, Layout, CheckSquare } from "lucide-react";
 
 export default function BrandGuidePage() {
   return (
@@ -23,7 +23,7 @@ export default function BrandGuidePage() {
             <Badge variant="secondary">v2.0</Badge>
           </div>
           <p className="text-xl text-muted-foreground">
-            PR × Prism — 競合のPR戦略を"分光"し、勝ちパターンを可視化する
+            PR × Prism — 競合のPR戦略を&quot;分光&quot;し、勝ちパターンを可視化する
           </p>
         </div>
       </div>
@@ -70,7 +70,7 @@ export default function BrandGuidePage() {
             <p>
               光がプリズムを通過すると、目に見えなかった波長が虹として分離される。
               PRismは、PR業界に同じ体験を提供する。複雑に混在する競合のPR活動を、
-              データとフレームワークの力で美しく"分光"し、隠れていた勝ちパターンを可視化する。
+              データとフレームワークの力で美しく&quot;分光&quot;し、隠れていた勝ちパターンを可視化する。
             </p>
           </CardContent>
         </Card>
@@ -107,7 +107,7 @@ export default function BrandGuidePage() {
             </CardHeader>
             <CardContent>
               <blockquote className="border-l-4 border-primary pl-4 italic">
-                PR戦略の"なぜ"を可視化し、すべてのPRパーソンに「次の一手」を届ける。
+                PR戦略の&quot;なぜ&quot;を可視化し、すべてのPRパーソンに「次の一手」を届ける。
               </blockquote>
             </CardContent>
           </Card>
@@ -242,7 +242,7 @@ export default function BrandGuidePage() {
                 </div>
                 <div className="p-4 border rounded-lg text-center">
                   <Badge variant="outline" className="mb-2">差別化</Badge>
-                  <p className="font-medium">「PR戦略の"なぜ"を、可視化する。」</p>
+                  <p className="font-medium">「PR戦略の&quot;なぜ&quot;を、可視化する。」</p>
                 </div>
                 <div className="p-4 border rounded-lg text-center">
                   <Badge variant="outline" className="mb-2">English</Badge>
@@ -259,7 +259,7 @@ export default function BrandGuidePage() {
       {/* 4. Logo System */}
       <section id="logo" className="space-y-6">
         <h2 className="text-2xl font-bold flex items-center gap-2">
-          <Image className="h-6 w-6 text-primary" />
+          <ImageIcon className="h-6 w-6 text-primary" />
           4. ロゴシステム
         </h2>
 

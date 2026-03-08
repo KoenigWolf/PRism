@@ -6,13 +6,11 @@ import {
   ArrowLeft,
   Target,
   TrendingUp,
-  Shield,
   DollarSign,
   Rocket,
   Calendar,
   AlertTriangle,
   BarChart3,
-  Users,
   Zap
 } from "lucide-react";
 
@@ -255,7 +253,7 @@ export default function BusinessStrategyPage() {
                 <Badge className="mb-2">PRism</Badge>
                 <p className="font-medium">Why it worked? → What&apos;s next?</p>
                 <p className="text-sm text-muted-foreground mt-2">
-                  「競合Aは"成分訴求×専門家コラボ"のPESOパターンでEarned露出が3倍に。御社も同パターンの横展開が有効です」
+                  「競合Aは&quot;成分訴求×専門家コラボ&quot;のPESOパターンでEarned露出が3倍に。御社も同パターンの横展開が有効です」
                 </p>
               </div>
             </div>
@@ -355,9 +353,8 @@ export default function BusinessStrategyPage() {
               ].map((plan) => (
                 <div
                   key={plan.name}
-                  className={`p-6 border rounded-lg ${
-                    plan.highlight ? "border-primary border-2 bg-primary/5" : ""
-                  }`}
+                  className={`p-6 border rounded-lg ${plan.highlight ? "border-primary border-2 bg-primary/5" : ""
+                    }`}
                 >
                   {plan.highlight && (
                     <Badge className="mb-2">おすすめ</Badge>
@@ -626,9 +623,8 @@ export default function BusinessStrategyPage() {
               ].map((item) => (
                 <div key={item.risk} className="p-4 border rounded-lg">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className={`w-3 h-3 rounded-full ${
-                      item.level === "high" ? "bg-destructive" : "bg-yellow-500"
-                    }`} />
+                    <span className={`w-3 h-3 rounded-full ${item.level === "high" ? "bg-destructive" : "bg-yellow-500"
+                      }`} />
                     <h4 className="font-medium">{item.risk}</h4>
                     <div className="flex gap-1 ml-auto">
                       <Badge variant="outline">発生: {item.prob}</Badge>
