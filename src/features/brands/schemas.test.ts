@@ -1,11 +1,14 @@
 import { describe, it, expect } from "vitest";
 import { brandFormSchema } from "./schemas";
 
+// テスト用のUUID
+const TEST_COMPANY_UUID = "550e8400-e29b-41d4-a716-446655440000";
+
 describe("brandFormSchema", () => {
   it("should accept valid input", () => {
     const result = brandFormSchema.safeParse({
       name: "テストブランド",
-      companyId: "company-123",
+      companyId: TEST_COMPANY_UUID,
       category: "化粧品",
     });
     expect(result.success).toBe(true);
@@ -14,7 +17,7 @@ describe("brandFormSchema", () => {
   it("should reject empty name", () => {
     const result = brandFormSchema.safeParse({
       name: "",
-      companyId: "company-123",
+      companyId: TEST_COMPANY_UUID,
     });
     expect(result.success).toBe(false);
   });
