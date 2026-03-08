@@ -1,6 +1,10 @@
 import { getBrands } from "@/features/brands/queries";
 import { getCompareData } from "@/features/compare/queries";
-import { CompareSelector, CompareCharts } from "@/features/compare/components";
+import {
+  CompareSelector,
+  CompareCharts,
+  CompareInsight,
+} from "@/features/compare/components";
 
 interface ComparePageProps {
   searchParams: Promise<{
@@ -27,6 +31,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
       </div>
       <CompareSelector brands={brands} />
       <CompareCharts data={compareData} />
+      <CompareInsight brands={brands} />
     </div>
   );
 }
