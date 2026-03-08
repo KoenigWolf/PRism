@@ -4,11 +4,16 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ============================================================
+   PRism Brand Design Tokens
+   Based on BRAND_GUIDE.md v2.0
+   ============================================================ */
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -38,82 +43,140 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
+  --radius-4xl: 28px;
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.58 0.22 27);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* PRism Brand Colors - Light Mode */
+  --color-prism-primary: #4F46E5;
+  --color-prism-primary-dark: #4338CA;
+  --color-prism-primary-light: #E0E7FF;
+  --color-prism-accent: #8B5CF6;
+
+  /* Semantic Colors */
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-error: #F43F5E;
+  --color-info: #0EA5E9;
+
+  /* PESO Colors (Fixed - Do Not Change) */
+  --color-peso-paid: #F59E0B;
+  --color-peso-earned: #3B82F6;
+  --color-peso-shared: #10B981;
+  --color-peso-owned: #8B5CF6;
+
+  /* Neutral Colors (Slate) */
+  --color-slate-900: #0F172A;
+  --color-slate-800: #1E293B;
+  --color-slate-700: #334155;
+  --color-slate-500: #64748B;
+  --color-slate-400: #94A3B8;
+  --color-slate-300: #CBD5E1;
+  --color-slate-200: #E2E8F0;
+  --color-slate-100: #F1F5F9;
+  --color-slate-50: #F8FAFC;
+
+  /* shadcn/ui Variables - Light Mode */
+  --background: #F8FAFC;
+  --foreground: #334155;
+  --card: #FFFFFF;
+  --card-foreground: #334155;
+  --popover: #FFFFFF;
+  --popover-foreground: #334155;
+  --primary: #4F46E5;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F1F5F9;
+  --secondary-foreground: #334155;
+  --muted: #F1F5F9;
+  --muted-foreground: #64748B;
+  --accent: #8B5CF6;
+  --accent-foreground: #FFFFFF;
+  --destructive: #F43F5E;
+  --border: #CBD5E1;
+  --input: #CBD5E1;
+  --ring: #4F46E5;
+
+  /* Chart Colors (PESO) */
+  --chart-1: #F59E0B;
+  --chart-2: #3B82F6;
+  --chart-3: #10B981;
+  --chart-4: #8B5CF6;
+  --chart-5: #4F46E5;
+
+  --radius: 8px;
+
+  /* Sidebar - Light Mode */
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #334155;
+  --sidebar-primary: #4F46E5;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F1F5F9;
+  --sidebar-accent-foreground: #334155;
+  --sidebar-border: #CBD5E1;
+  --sidebar-ring: #4F46E5;
+
+  /* Typography - Using next/font CSS variables */
+  --font-sans: var(--font-inter), var(--font-noto-sans-jp), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), 'SF Mono', monospace;
+
+  /* Spacing (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-lg: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+
+  /* Transitions */
+  --duration-micro: 150ms;
+  --duration-normal: 250ms;
+  --duration-emphasis: 400ms;
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-emphasis: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Dark Mode (Default for PRism - Data analysis tools work better on dark backgrounds) */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.87 0.00 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.371 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #0F172A;
+  --foreground: #E2E8F0;
+  --card: #1E293B;
+  --card-foreground: #E2E8F0;
+  --popover: #1E293B;
+  --popover-foreground: #E2E8F0;
+  --primary: #818CF8;
+  --primary-foreground: #0F172A;
+  --secondary: #334155;
+  --secondary-foreground: #E2E8F0;
+  --muted: #334155;
+  --muted-foreground: #94A3B8;
+  --accent: #A78BFA;
+  --accent-foreground: #0F172A;
+  --destructive: #FB7185;
+  --border: #334155;
+  --input: #334155;
+  --ring: #818CF8;
+
+  --sidebar: #1E293B;
+  --sidebar-foreground: #E2E8F0;
+  --sidebar-primary: #818CF8;
+  --sidebar-primary-foreground: #0F172A;
+  --sidebar-accent: #334155;
+  --sidebar-accent-foreground: #E2E8F0;
+  --sidebar-border: #334155;
+  --sidebar-ring: #818CF8;
 }
 
 @layer base {
@@ -125,5 +188,13 @@
   }
   html {
     @apply font-sans;
+  }
+}
+
+/* Accessibility: Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }
