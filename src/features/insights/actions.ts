@@ -54,8 +54,10 @@ export async function deleteInsight(id: string): Promise<ActionResult<void>> {
   const prisma = getTenantPrisma(tenantId);
 
   try {
-    await prisma.insight.delete({
+    // ソフトデリート（deletedAtを更新）
+    await prisma.insight.update({
       where: { id },
+      data: { deletedAt: new Date() },
     });
 
     return { success: true, data: undefined };

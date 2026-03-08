@@ -8,6 +8,9 @@ on:
 
 env:
   DATABASE_URL: postgresql://postgres:postgres@localhost:5432/prism_test
+  AUTH_SECRET: test-secret-for-ci-only
+  NEXTAUTH_URL: http://localhost:3000
+  OPENAI_API_KEY: sk-test-key-for-ci
 
 jobs:
   lint-and-test:
@@ -80,9 +83,41 @@ jobs:
           cache: npm
 
       - run: npm ci
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
       - run: npx playwright install --with-deps
 
       - run: npx prisma migrate deploy
       - run: npx prisma db seed
 
       - run: npm run test:e2e
+
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # Check for known vulnerabilities
+      - name: Security audit
+        run: npm audit --audit-level=high
+
+      # Check for secrets in code
+      - name: Check for secrets
+        run: |
+          if grep -rE "(sk-[a-zA-Z0-9]{48}|password\s*=\s*['\"][^'\"]+['\"])" --include="*.ts" --include="*.tsx" --include="*.js" src/ 2>/dev/null; then
+            echo "Potential secrets found in code!"
+            exit 1
+          fi
+          echo "No secrets detected"

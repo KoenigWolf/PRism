@@ -212,10 +212,11 @@ model AuditLog {
 // ============================================================
 
 model Insight {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   content   String
   brandIds  String[]
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+  deletedAt DateTime?
 
   tenantId String
   tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)

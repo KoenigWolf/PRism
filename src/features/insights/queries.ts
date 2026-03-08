@@ -14,7 +14,9 @@ export async function getInsights(brandIds?: string[]) {
   const prisma = getTenantPrisma(tenantId);
 
   try {
-    const where: { brandIds?: { hasSome: string[] } } = {};
+    const where: { brandIds?: { hasSome: string[] }; deletedAt: null } = {
+      deletedAt: null,
+    };
     if (brandIds && brandIds.length > 0) {
       where.brandIds = { hasSome: brandIds };
     }
@@ -42,8 +44,8 @@ export async function getInsightById(id: string) {
   const prisma = getTenantPrisma(tenantId);
 
   try {
-    const insight = await prisma.insight.findUnique({
-      where: { id },
+    const insight = await prisma.insight.findFirst({
+      where: { id, deletedAt: null },
     });
 
     return insight;
