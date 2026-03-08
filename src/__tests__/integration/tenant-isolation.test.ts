@@ -8,7 +8,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { TEST_TENANT_A, TEST_TENANT_B } from "@/testing/setup";
 
 // Mock PrismaClient
-const mockQuery = vi.fn();
 const mockFindMany = vi.fn();
 const mockFindFirst = vi.fn();
 const mockFindUnique = vi.fn();
@@ -100,11 +99,12 @@ describe("テナント分離 - getTenantPrisma", () => {
       mockCreate.mockResolvedValue(createdBrand);
 
       const prismaA = getTenantPrisma(TEST_TENANT_A);
+      // getTenantPrismaがtenantIdを自動注入するため、型定義ではtenantIdなしでOK
       const result = await prismaA.brand.create({
         data: {
           name: "テストブランド",
           companyId: "company-1",
-        },
+        } as Parameters<typeof prismaA.brand.create>[0]["data"],
       });
 
       // tenantIdが自動注入されていることを確認

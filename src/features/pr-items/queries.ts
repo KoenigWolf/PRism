@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import { getTenantPrisma, basePrisma } from "@/lib/prisma";
+import { getTenantPrisma } from "@/lib/prisma";
 import { MediaType, Prisma } from "@prisma/client";
 
 // Type for PrItem with Brand included

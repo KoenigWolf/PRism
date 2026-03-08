@@ -120,7 +120,8 @@ export async function GET(request: Request, { params }: RouteParams) {
   const { tenant: tenantSlug } = await params;
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
-  const state = url.searchParams.get("state");
+  // TODO: state検証を実装（CSRF対策）
+  const _state = url.searchParams.get("state");
 
   if (!code) {
     return NextResponse.redirect(
