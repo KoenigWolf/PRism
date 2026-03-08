@@ -8,6 +8,7 @@ on:
 
 env:
   DATABASE_URL: postgresql://postgres:postgres@localhost:5432/prism_test
+  DIRECT_URL: postgresql://postgres:postgres@localhost:5432/prism_test
   AUTH_SECRET: test-secret-for-ci-only
   NEXTAUTH_URL: http://localhost:3000
   OPENAI_API_KEY: sk-test-key-for-ci
@@ -47,7 +48,8 @@ jobs:
       - run: npx tsc --noEmit
 
       # DB setup
-      - run: npx prisma migrate deploy
+      - run: npx prisma db push --skip-generate
+      - run: npx prisma generate
       - run: npx prisma db seed
 
       # Unit & Integration tests
@@ -92,10 +94,22 @@ jobs:
 
       - run: npx playwright install --with-deps
 
-      - run: npx prisma migrate deploy
+      - run: npx prisma db push --skip-generate
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/prism_test
+          DIRECT_URL: postgresql://postgres:postgres@localhost:5432/prism_test
+      - run: npx prisma generate
       - run: npx prisma db seed
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/prism_test
+          DIRECT_URL: postgresql://postgres:postgres@localhost:5432/prism_test
 
       - run: npm run test:e2e
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/prism_test
+          DIRECT_URL: postgresql://postgres:postgres@localhost:5432/prism_test
+          AUTH_SECRET: test-secret-for-ci-only
+          NEXTAUTH_URL: http://localhost:3000
 
   security:
     runs-on: ubuntu-latest
