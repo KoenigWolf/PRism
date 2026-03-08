@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { auth } from "@/auth";
+import { auth } from "@/lib/auth";
 import { getTenantPrisma } from "@/lib/prisma";
 import { authorize } from "@/lib/authorization";
 import { captureError } from "@/lib/logger";

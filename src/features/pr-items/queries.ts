@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { auth } from "@/lib/auth";
 import { getTenantPrisma, basePrisma } from "@/lib/prisma";
 import { MediaType, Prisma } from "@prisma/client";
 

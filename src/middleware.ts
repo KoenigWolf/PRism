@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { auth } from "@/auth";
+import { auth } from "@/lib/auth";
 
 // Paths that don't require authentication
 const publicPaths = ["/login", "/api/auth", "/_next", "/favicon.ico"];
