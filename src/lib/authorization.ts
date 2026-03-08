@@ -10,7 +10,9 @@ export type Permission =
   | "pr-item:delete"
   | "tenant:manage"
   | "user:invite"
-  | "user:remove";
+  | "user:remove"
+  | "billing:manage"
+  | "audit:read";
 
 const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   OWNER: [
@@ -23,6 +25,8 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "tenant:manage",
     "user:invite",
     "user:remove",
+    "billing:manage",
+    "audit:read",
   ],
   ADMIN: [
     "brand:create",
@@ -32,6 +36,7 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     "pr-item:update",
     "pr-item:delete",
     "user:invite",
+    "audit:read",
   ],
   MEMBER: ["brand:create", "brand:update", "pr-item:create", "pr-item:update"],
 };

@@ -20,13 +20,18 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const format = (searchParams.get("format") || "json") as ExportFormat;
     const type = (searchParams.get("type") || "all") as ExportType;
+    const brandsParam = searchParams.get("brands");
+    const brandIds = brandsParam ? brandsParam.split(",").filter(Boolean) : [];
 
     // データ取得
     const data: Record<string, unknown[]> = {};
 
     if (type === "brands" || type === "all") {
       const brands = await prisma.brand.findMany({
-        where: { deletedAt: null },
+        where: {
+          deletedAt: null,
+          ...(brandIds.length > 0 ? { id: { in: brandIds } } : {}),
+        },
         include: {
           company: { select: { name: true } },
           _count: { select: { prItems: true } },
@@ -46,7 +51,10 @@ export async function GET(request: NextRequest) {
 
     if (type === "pr-items" || type === "all") {
       const prItems = await prisma.prItem.findMany({
-        where: { deletedAt: null },
+        where: {
+          deletedAt: null,
+          ...(brandIds.length > 0 ? { brandId: { in: brandIds } } : {}),
+        },
         include: {
           brand: { select: { name: true } },
         },
@@ -120,10 +128,12 @@ function convertToCSV(data: Record<string, unknown[]>): string {
       const values = headers.map((h) => {
         const val = (item as Record<string, unknown>)[h];
         if (val === null || val === undefined) return "";
-        if (typeof val === "string" && (val.includes(",") || val.includes('"'))) {
-          return `"${val.replace(/"/g, '""')}"`;
+        const strVal = String(val);
+        // カンマ、ダブルクォート、改行を含む場合はクォートで囲む
+        if (strVal.includes(",") || strVal.includes('"') || /\r|\n/.test(strVal)) {
+          return `"${strVal.replace(/"/g, '""')}"`;
         }
-        return String(val);
+        return strVal;
       });
       lines.push(values.join(","));
     }

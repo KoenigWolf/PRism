@@ -76,12 +76,11 @@ export async function checkAIInsightLimit(): Promise<FeatureLimit> {
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-  // 今月のインサイト生成数をカウント
+  // 今月のインサイト生成数をカウント（ソフトデリートも含める - クォータ回避防止）
   const current = await prisma.insight.count({
     where: {
       tenantId: session.user.tenantId,
       createdAt: { gte: startOfMonth },
-      deletedAt: null,
     },
   });
 

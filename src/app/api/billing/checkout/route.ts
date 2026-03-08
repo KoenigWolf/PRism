@@ -1,13 +1,21 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { stripe } from "@/lib/stripe";
+import { stripe, getPlanFromPriceId, PLANS } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { captureErrorWithTenant } from "@/lib/logger";
+import { hasPermission } from "@/lib/authorization";
+import { Role } from "@prisma/client";
 
 export async function POST(request: Request) {
   const session = await auth();
   if (!session?.user?.tenantId) {
     return NextResponse.json({ error: "認証エラー" }, { status: 401 });
+  }
+
+  // 課金管理権限のチェック（OWNERのみ）
+  const userRole = session.user.role as Role;
+  if (!hasPermission(userRole, "billing:manage")) {
+    return NextResponse.json({ error: "権限がありません" }, { status: 403 });
   }
 
   const tenantId = session.user.tenantId;
@@ -17,6 +25,12 @@ export async function POST(request: Request) {
 
     if (!priceId) {
       return NextResponse.json({ error: "priceIdが必要です" }, { status: 400 });
+    }
+
+    // priceIdの検証（サーバーサイドで許可されたプランかチェック）
+    const plan = getPlanFromPriceId(priceId);
+    if (!plan || !PLANS[plan]) {
+      return NextResponse.json({ error: "無効なプランです" }, { status: 400 });
     }
 
     const tenant = await prisma.tenant.findUnique({

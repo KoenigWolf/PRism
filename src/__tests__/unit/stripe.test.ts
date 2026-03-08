@@ -55,14 +55,14 @@ describe("Stripe Plan Configuration", () => {
   });
 
   describe("getPlanFromPriceId", () => {
-    it("should return starter for unknown price ID", () => {
+    it("should return null for unknown price ID", () => {
       const plan = getPlanFromPriceId("unknown_price_id");
-      expect(plan).toBe("starter");
+      expect(plan).toBeNull();
     });
 
-    it("should return starter for empty price ID", () => {
+    it("should return null for empty price ID", () => {
       const plan = getPlanFromPriceId("");
-      expect(plan).toBe("starter");
+      expect(plan).toBeNull();
     });
   });
 });

@@ -34,7 +34,8 @@ export function ExportButtons() {
         url = `/api/export/pdf?brands=${brandIds.join(",")}`;
         filename = `prism-compare-report-${Date.now()}.pdf`;
       } else {
-        url = `/api/export?format=${format}&type=all`;
+        // JSON/CSVエクスポートでも選択されたブランドのみをエクスポート
+        url = `/api/export?format=${format}&type=all&brands=${brandIds.join(",")}`;
         filename = `prism-export-${Date.now()}.${format}`;
       }
 

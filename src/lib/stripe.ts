@@ -48,21 +48,24 @@ export const PLANS = {
 export type PlanType = keyof typeof PLANS;
 
 // Stripe価格IDからプランタイプを取得
-export function getPlanFromPriceId(priceId: string): PlanType {
-  // 空の価格IDは starter として扱う
+// 不明なpriceIdの場合はnullを返す（セキュリティのため）
+export function getPlanFromPriceId(priceId: string): PlanType | null {
+  // 空の価格IDは無効
   if (!priceId) {
-    return "starter";
+    return null;
   }
 
-  const priceStarter = process.env.STRIPE_PRICE_STARTER;
-  const priceProfessional = process.env.STRIPE_PRICE_PROFESSIONAL;
-  const priceEnterprise = process.env.STRIPE_PRICE_ENTERPRISE;
+  // 環境変数から価格IDを取得（空の値は除外）
+  const priceStarter = process.env.STRIPE_PRICE_STARTER || null;
+  const priceProfessional = process.env.STRIPE_PRICE_PROFESSIONAL || null;
+  const priceEnterprise = process.env.STRIPE_PRICE_ENTERPRISE || null;
 
   if (priceStarter && priceId === priceStarter) return "starter";
   if (priceProfessional && priceId === priceProfessional) return "professional";
   if (priceEnterprise && priceId === priceEnterprise) return "enterprise";
 
-  return "starter";
+  // 不明な価格IDは許可しない
+  return null;
 }
 
 // プランの機能制限をチェック

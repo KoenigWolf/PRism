@@ -3,6 +3,8 @@
 import { auth } from "@/lib/auth";
 import { getTenantPrisma } from "@/lib/prisma";
 import { captureErrorWithTenant } from "@/lib/logger";
+import { hasPermission } from "@/lib/authorization";
+import { Role } from "@prisma/client";
 
 export type AuditAction =
   | "CREATE"
@@ -63,6 +65,7 @@ export async function writeAuditLog(params: AuditLogParams): Promise<void> {
 
 /**
  * 監査ログを取得する（管理者向け）
+ * OWNER/ADMINのみアクセス可能
  */
 export async function getAuditLogs(options?: {
   entityType?: AuditEntityType;
@@ -72,6 +75,12 @@ export async function getAuditLogs(options?: {
   const session = await auth();
   if (!session?.user?.tenantId) {
     throw new Error("認証エラー");
+  }
+
+  // 監査ログ読み取り権限のチェック（OWNER/ADMINのみ）
+  const userRole = session.user.role as Role;
+  if (!hasPermission(userRole, "audit:read")) {
+    throw new Error("権限エラー: 監査ログの閲覧権限がありません");
   }
 
   const tenantId = session.user.tenantId;

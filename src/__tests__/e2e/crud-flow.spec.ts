@@ -15,7 +15,8 @@ test.describe("ブランドCRUDフロー", () => {
 
     // ブランド一覧ページの要素を確認
     await expect(page.getByRole("heading", { name: /ブランド管理/i })).toBeVisible();
-    await expect(page.getByRole("button", { name: /新規作成/i })).toBeVisible();
+    // 新規作成はLinkコンポーネントなのでlinkロールを使用
+    await expect(page.getByRole("link", { name: /新規作成/i })).toBeVisible();
   });
 
   test("ブランド新規作成フォームが表示されること", async ({ page }) => {
@@ -53,15 +54,15 @@ test.describe("ブランドCRUDフロー", () => {
   test("ブランド詳細ページが表示されること", async ({ page }) => {
     await page.goto("/brands");
 
-    // 最初のブランドをクリック
+    // 最初のブランドをクリック（テーブルヘッダーを除く最初のデータ行）
     const firstBrand = page.getByRole("row").nth(1);
-    if (await firstBrand.isVisible()) {
-      await firstBrand.click();
+    // 明示的にブランド行の存在を確認（無い場合はテスト失敗）
+    await expect(firstBrand).toBeVisible();
+    await firstBrand.click();
 
-      // 詳細ページの要素を確認
-      await expect(page.getByRole("heading")).toBeVisible();
-      await expect(page.getByRole("button", { name: /編集/i })).toBeVisible();
-    }
+    // 詳細ページの要素を確認
+    await expect(page.getByRole("heading")).toBeVisible();
+    await expect(page.getByRole("button", { name: /編集/i })).toBeVisible();
   });
 
   test("ダッシュボードにKPIカードが表示されること", async ({ page }) => {

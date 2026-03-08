@@ -15,8 +15,17 @@ export async function proxy(request: NextRequest) {
 
   // Rate limiting for login endpoint
   if (rateLimitedPaths.some((path) => pathname.startsWith(path))) {
-    const ip = getClientIP(request.headers);
-    const { success } = await checkRateLimit(loginRateLimit, ip);
+    let identifier = getClientIP(request.headers);
+
+    // IPが不明な場合はフィンガープリントを生成
+    if (identifier === "unknown") {
+      const userAgent = request.headers.get("user-agent") || "";
+      const acceptLanguage = request.headers.get("accept-language") || "";
+      // User-AgentとAccept-Languageからフィンガープリントを生成
+      identifier = `fp-${Buffer.from(userAgent + acceptLanguage).toString("base64").slice(0, 32)}`;
+    }
+
+    const { success } = await checkRateLimit(loginRateLimit, identifier);
 
     if (!success) {
       return NextResponse.json(

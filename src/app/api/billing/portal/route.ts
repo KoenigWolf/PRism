@@ -3,11 +3,19 @@ import { auth } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
 import { captureErrorWithTenant } from "@/lib/logger";
+import { hasPermission } from "@/lib/authorization";
+import { Role } from "@prisma/client";
 
 export async function POST() {
   const session = await auth();
   if (!session?.user?.tenantId) {
     return NextResponse.json({ error: "認証エラー" }, { status: 401 });
+  }
+
+  // 課金管理権限のチェック（OWNERのみ）
+  const userRole = session.user.role as Role;
+  if (!hasPermission(userRole, "billing:manage")) {
+    return NextResponse.json({ error: "権限がありません" }, { status: 403 });
   }
 
   const tenantId = session.user.tenantId;
