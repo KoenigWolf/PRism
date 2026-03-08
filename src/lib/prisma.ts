@@ -20,6 +20,7 @@ const TENANT_MODELS = [
   "prItemTag",
   "note",
   "auditLog",
+  "insight",
 ] as const;
 
 type TenantModel = (typeof TENANT_MODELS)[number];

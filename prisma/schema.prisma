@@ -43,6 +43,7 @@ model Tenant {
   tags      Tag[]
   notes     Note[]
   auditLogs AuditLog[]
+  insights  Insight[]
 }
 
 model User {
@@ -204,4 +205,20 @@ model AuditLog {
   @@index([tenantId])
   @@index([entityType, entityId])
   @@index([createdAt])
+}
+
+// ============================================================
+// AIインサイト
+// ============================================================
+
+model Insight {
+  id        String   @id @default(uuid())
+  content   String
+  brandIds  String[]
+  createdAt DateTime @default(now())
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
 }
