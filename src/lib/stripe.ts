@@ -49,12 +49,20 @@ export type PlanType = keyof typeof PLANS;
 
 // Stripe価格IDからプランタイプを取得
 export function getPlanFromPriceId(priceId: string): PlanType {
-  const priceToPlans: Record<string, PlanType> = {
-    [process.env.STRIPE_PRICE_STARTER || ""]: "starter",
-    [process.env.STRIPE_PRICE_PROFESSIONAL || ""]: "professional",
-    [process.env.STRIPE_PRICE_ENTERPRISE || ""]: "enterprise",
-  };
-  return priceToPlans[priceId] || "starter";
+  // 空の価格IDは starter として扱う
+  if (!priceId) {
+    return "starter";
+  }
+
+  const priceStarter = process.env.STRIPE_PRICE_STARTER;
+  const priceProfessional = process.env.STRIPE_PRICE_PROFESSIONAL;
+  const priceEnterprise = process.env.STRIPE_PRICE_ENTERPRISE;
+
+  if (priceStarter && priceId === priceStarter) return "starter";
+  if (priceProfessional && priceId === priceProfessional) return "professional";
+  if (priceEnterprise && priceId === priceEnterprise) return "enterprise";
+
+  return "starter";
 }
 
 // プランの機能制限をチェック
