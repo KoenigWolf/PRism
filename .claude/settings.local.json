@@ -26,7 +26,8 @@
       "Bash(gh pr view:*)",
       "Bash(gh pr edit:*)",
       "Bash(gh api:*)",
-      "Bash(gh run:*)"
+      "Bash(gh run:*)",
+      "WebFetch(domain:vercel.com)"
     ]
   }
 }

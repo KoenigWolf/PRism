@@ -10,7 +10,7 @@ const publicPaths = ["/login", "/api/auth", "/_next", "/favicon.ico"];
 // Paths that require rate limiting
 const rateLimitedPaths = ["/api/auth/callback/credentials"];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Rate limiting for login endpoint
