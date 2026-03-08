@@ -21,7 +21,11 @@
       "Bash(cat:*)",
       "Bash(npm test:*)",
       "Bash(npx tsc:*)",
-      "Bash(npm run lint)"
+      "Bash(npm run lint)",
+      "Bash(gh pr create:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr edit:*)",
+      "Bash(gh api:*)"
     ]
   }
 }
