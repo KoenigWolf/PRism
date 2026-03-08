@@ -1,0 +1,207 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================================
+// Enums
+// ============================================================
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum MediaType {
+  PAID
+  EARNED
+  SHARED
+  OWNED
+}
+
+// ============================================================
+// マルチテナント基盤
+// ============================================================
+
+model Tenant {
+  id        String   @id @default(uuid())
+  name      String
+  plan      String   @default("starter")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users     User[]
+  companies Company[]
+  brands    Brand[]
+  prItems   PrItem[]
+  tags      Tag[]
+  notes     Note[]
+  auditLogs AuditLog[]
+}
+
+model User {
+  id             String    @id @default(uuid())
+  email          String    @unique
+  hashedPassword String
+  name           String
+  role           Role      @default(MEMBER)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  notes     Note[]
+  auditLogs AuditLog[]
+
+  @@index([tenantId])
+  @@index([email])
+}
+
+// ============================================================
+// PR分析ドメイン
+// ============================================================
+
+model Company {
+  id          String    @id @default(uuid())
+  name        String
+  industry    String?
+  website     String?
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  brands Brand[]
+
+  @@index([tenantId])
+}
+
+model Brand {
+  id          String    @id @default(uuid())
+  name        String
+  category    String?
+  logoUrl     String?
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  prItems PrItem[]
+
+  @@index([tenantId])
+  @@index([companyId])
+}
+
+model PrItem {
+  id              String     @id @default(uuid())
+  title           String
+  summary         String?
+  sourceType      String
+  sourceUrl       String?
+  mediaType       MediaType
+  channel         String?
+  engagementCount Int        @default(0)
+  reachCount      Int?
+  publishedAt     DateTime?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  deletedAt       DateTime?
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  brandId String
+  brand   Brand  @relation(fields: [brandId], references: [id], onDelete: Cascade)
+
+  tags  PrItemTag[]
+  notes Note[]
+
+  @@index([tenantId])
+  @@index([brandId])
+  @@index([mediaType])
+  @@index([publishedAt])
+  @@index([tenantId, brandId, mediaType])
+}
+
+// ============================================================
+// タグ・メモ（補助）
+// ============================================================
+
+model Tag {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  prItems PrItemTag[]
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+}
+
+model PrItemTag {
+  prItemId String
+  prItem   PrItem @relation(fields: [prItemId], references: [id], onDelete: Cascade)
+  tagId    String
+  tag      Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([prItemId, tagId])
+}
+
+model Note {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  prItemId String
+  prItem   PrItem @relation(fields: [prItemId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([prItemId])
+}
+
+// ============================================================
+// 監査ログ
+// ============================================================
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  action     String
+  entityType String
+  entityId   String
+  changes    Json?
+  createdAt  DateTime @default(now())
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
