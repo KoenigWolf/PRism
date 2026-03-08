@@ -8,6 +8,7 @@ import {
   Tag,
   FileText,
   BarChart3,
+  BookOpen,
 } from "lucide-react";
 
 const navItems = [
@@ -15,6 +16,7 @@ const navItems = [
   { href: "/brands", label: "ブランド管理", icon: Tag },
   { href: "/pr-items", label: "PRデータ", icon: FileText },
   { href: "/compare", label: "比較分析", icon: BarChart3 },
+  { href: "/guides", label: "ガイドライン", icon: BookOpen },
 ];
 
 export function Sidebar() {
