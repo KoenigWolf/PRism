@@ -11,7 +11,13 @@
       "Bash(docker compose:*)",
       "Bash(npm run build:*)",
       "Bash(ls:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nchore: インフラ・開発環境の設定を追加\n\n- Docker Compose設定 \\(PostgreSQL\\) を追加\n- GitHub Actions CI/CDワークフローを追加\n- .gitignoreにPrisma関連の除外設定を追加\n- Next.js設定を更新\n- 依存パッケージを追加 \\(Auth.js, Prisma等\\)\n- Claude設定を更新\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(git checkout:*)",
+      "Bash(mkdir:*)"
     ]
   }
 }
