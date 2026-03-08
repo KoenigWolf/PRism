@@ -1,10 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { auth } from "@/lib/auth";
 import { getTenantPrisma } from "@/lib/prisma";
 import { authorize } from "@/lib/authorization";
 import { captureError } from "@/lib/logger";
+import { writeAuditLog } from "@/lib/audit";
 import type { ActionResult } from "@/types/actions";
 import { brandFormSchema, type BrandFormInput } from "./schemas";
 
@@ -31,6 +31,14 @@ export async function createBrand(
 
     revalidatePath("/brands");
     revalidatePath("/");
+
+    // 監査ログ
+    await writeAuditLog({
+      action: "CREATE",
+      entityType: "Brand",
+      entityId: brand.id,
+      changes: { name: brand.name, category: brand.category },
+    });
 
     return { success: true, data: { id: brand.id } };
   } catch (error) {
@@ -65,6 +73,14 @@ export async function updateBrand(
     revalidatePath(`/brands/${id}`);
     revalidatePath("/");
 
+    // 監査ログ
+    await writeAuditLog({
+      action: "UPDATE",
+      entityType: "Brand",
+      entityId: id,
+      changes: { name: parsed.data.name, category: parsed.data.category },
+    });
+
     return { success: true };
   } catch (error) {
     captureError(error as Error, { action: "updateBrand", id, input });
@@ -84,6 +100,13 @@ export async function deleteBrand(id: string): Promise<ActionResult> {
 
     revalidatePath("/brands");
     revalidatePath("/");
+
+    // 監査ログ
+    await writeAuditLog({
+      action: "DELETE",
+      entityType: "Brand",
+      entityId: id,
+    });
 
     return { success: true };
   } catch (error) {
