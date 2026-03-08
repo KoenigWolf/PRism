@@ -36,6 +36,12 @@ model Tenant {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Stripe integration
+  stripeCustomerId     String?  @unique
+  stripeSubscriptionId String?
+  stripePriceId        String?
+  stripeCurrentPeriodEnd DateTime?
+
   users     User[]
   companies Company[]
   brands    Brand[]

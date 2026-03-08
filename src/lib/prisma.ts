@@ -6,6 +6,10 @@ const globalForPrisma = globalThis as unknown as {
 
 export const basePrisma = globalForPrisma.prisma ?? new PrismaClient();
 
+// テナントフィルタなしのPrismaクライアント（管理系操作用）
+// Tenantテーブル操作やWebhook処理など、テナント横断的な処理に使用
+export const prisma = basePrisma;
+
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = basePrisma;
 }

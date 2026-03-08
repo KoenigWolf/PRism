@@ -3,6 +3,7 @@
 import { auth } from "@/lib/auth";
 import { getTenantPrisma } from "@/lib/prisma";
 import { captureErrorWithTenant } from "@/lib/logger";
+import { checkAIInsightLimit } from "@/lib/plan-limits";
 import type { ActionResult } from "@/types/actions";
 import { generateInsightSchema } from "./schemas";
 
@@ -25,6 +26,15 @@ export async function saveInsight(
     return {
       success: false,
       error: firstIssue?.message || "入力が無効です",
+    };
+  }
+
+  // プラン制限チェック
+  const insightLimit = await checkAIInsightLimit();
+  if (!insightLimit.allowed) {
+    return {
+      success: false,
+      error: `今月のAIインサイト生成回数が上限（${insightLimit.limit}回）に達しています。プランをアップグレードしてください。`,
     };
   }
 

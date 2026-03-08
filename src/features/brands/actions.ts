@@ -5,6 +5,7 @@ import { getTenantPrisma } from "@/lib/prisma";
 import { authorize } from "@/lib/authorization";
 import { captureError } from "@/lib/logger";
 import { writeAuditLog } from "@/lib/audit";
+import { checkBrandLimit } from "@/lib/plan-limits";
 import type { ActionResult } from "@/types/actions";
 import { brandFormSchema, type BrandFormInput } from "./schemas";
 
@@ -17,6 +18,15 @@ export async function createBrand(
 
     if (!parsed.success) {
       return { success: false, error: parsed.error.issues[0].message };
+    }
+
+    // プラン制限チェック
+    const brandLimit = await checkBrandLimit();
+    if (!brandLimit.allowed) {
+      return {
+        success: false,
+        error: `ブランド登録数が上限（${brandLimit.limit}件）に達しています。プランをアップグレードしてください。`,
+      };
     }
 
     const prisma = getTenantPrisma(session.user.tenantId);
