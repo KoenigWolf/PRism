@@ -60,6 +60,7 @@ model Tenant {
   notes     Note[]
   auditLogs AuditLog[]
   insights  Insight[]
+  rssSources RssSource[]
 }
 
 model User {
@@ -120,7 +121,8 @@ model Brand {
   companyId String
   company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
-  prItems PrItem[]
+  prItems    PrItem[]
+  rssSources RssSource[]
 
   @@index([tenantId])
   @@index([companyId])
@@ -238,4 +240,64 @@ model Insight {
   tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
+}
+
+// ============================================================
+// RSS自動収集
+// ============================================================
+
+model RssSource {
+  id          String    @id @default(uuid())
+  name        String    // 表示名（例: "資生堂 ニュースルーム"）
+  url         String    // RSSフィードURL
+  isActive    Boolean   @default(true)
+  lastFetched DateTime? // 最終取得日時
+  fetchCount  Int       @default(0) // 累計取得件数
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // 取得したPR情報を紐付けるブランド
+  brandId String
+  brand   Brand  @relation(fields: [brandId], references: [id], onDelete: Cascade)
+
+  collectedItems CollectedPrItem[]
+
+  @@unique([tenantId, url])
+  @@index([tenantId])
+  @@index([brandId])
+}
+
+model CollectedPrItem {
+  id           String    @id @default(uuid())
+  guid         String    // RSS記事の一意識別子（重複防止用）
+  title        String
+  summary      String?
+  sourceUrl    String?
+  publishedAt  DateTime?
+  rawData      Json?     // RSS記事の生データ
+
+  // Claude APIによる分類結果
+  mediaType    MediaType?
+  channel      String?
+  isProcessed  Boolean   @default(false)
+  processedAt  DateTime?
+
+  // PRItemに変換済みかどうか
+  prItemId     String?   @unique
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  rssSourceId String
+  rssSource   RssSource @relation(fields: [rssSourceId], references: [id], onDelete: Cascade)
+
+  tenantId String
+
+  @@unique([rssSourceId, guid])
+  @@index([tenantId])
+  @@index([rssSourceId])
+  @@index([isProcessed])
 }
