@@ -55,62 +55,80 @@ async function collectPrItems() {
       const items = await fetchRssFeed(source.url);
 
       for (const item of items) {
-        // 重複チェック
-        const existing = await prisma.collectedPrItem.findUnique({
-          where: {
-            rssSourceId_guid: {
-              rssSourceId: source.id,
-              guid: item.guid,
-            },
-          },
-        });
-
-        if (existing) continue;
-
-        // 新規アイテムを保存
-        const collected = await prisma.collectedPrItem.create({
-          data: {
-            guid: item.guid,
-            title: item.title,
-            summary: item.contentSnippet?.slice(0, 500),
-            sourceUrl: item.link,
-            publishedAt: item.pubDate ? new Date(item.pubDate) : null,
-            rawData: item as object,
-            rssSourceId: source.id,
-            tenantId: source.tenantId,
-          },
-        });
-
-        newItemsCount++;
-        totalCollected++;
-
-        // Claude APIで分類（ANTHROPIC_API_KEYがある場合のみ）
-        if (process.env.ANTHROPIC_API_KEY) {
-          try {
-            const classification = await classifyPrItem(
-              item.title,
-              item.contentSnippet,
-              item.link
-            );
-
-            await prisma.collectedPrItem.update({
-              where: { id: collected.id },
-              data: {
-                mediaType: classification.mediaType,
-                channel: classification.channel,
-                summary: classification.summary,
-                isProcessed: true,
-                processedAt: new Date(),
-              },
-            });
-
-            totalClassified++;
-          } catch (classifyError) {
-            console.error(
-              `[Cron] Failed to classify item ${collected.id}:`,
-              classifyError
-            );
+        try {
+          // 日付のバリデーション（Invalid Dateを防ぐ）
+          let publishedAt: Date | null = null;
+          if (item.pubDate) {
+            const parsed = new Date(item.pubDate);
+            if (!isNaN(parsed.getTime())) {
+              publishedAt = parsed;
+            }
           }
+
+          // upsertで重複チェックとインサートをアトミックに実行
+          const result = await prisma.collectedPrItem.upsert({
+            where: {
+              rssSourceId_guid: {
+                rssSourceId: source.id,
+                guid: item.guid,
+              },
+            },
+            update: {}, // 既存の場合は何もしない
+            create: {
+              guid: item.guid,
+              title: item.title,
+              summary: item.contentSnippet?.slice(0, 500),
+              sourceUrl: item.link,
+              publishedAt,
+              rawData: item as object,
+              rssSourceId: source.id,
+              tenantId: source.tenantId,
+            },
+          });
+
+          // 新規作成された場合のみカウント（createdAtが直近1秒以内）
+          const isNewItem =
+            new Date().getTime() - result.createdAt.getTime() < 1000;
+          if (!isNewItem) continue;
+
+          const collected = result;
+          newItemsCount++;
+          totalCollected++;
+
+          // Claude APIで分類（ANTHROPIC_API_KEYがある場合のみ）
+          if (process.env.ANTHROPIC_API_KEY) {
+            try {
+              const classification = await classifyPrItem(
+                item.title,
+                item.contentSnippet,
+                item.link
+              );
+
+              await prisma.collectedPrItem.update({
+                where: { id: collected.id },
+                data: {
+                  mediaType: classification.mediaType,
+                  channel: classification.channel,
+                  summary: classification.summary,
+                  isProcessed: true,
+                  processedAt: new Date(),
+                },
+              });
+
+              totalClassified++;
+            } catch (classifyError) {
+              console.error(
+                `[Cron] Failed to classify item ${collected.id}:`,
+                classifyError
+              );
+            }
+          }
+        } catch (itemError) {
+          // アイテム単位のエラーは記録して続行（フィード全体を停止しない）
+          console.error(
+            `[Cron] Failed to process item "${item.title}":`,
+            itemError
+          );
         }
       }
 

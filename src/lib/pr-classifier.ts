@@ -53,17 +53,26 @@ JSONのみを出力してください。`;
       response.content[0].type === "text" ? response.content[0].text : "";
     const json = JSON.parse(text.replace(/```json\n?|\n?```/g, "").trim());
 
-    // MediaTypeのバリデーション
+    // MediaTypeのバリデーション（無効な場合はフォールバック）
     const validMediaTypes: MediaType[] = ["PAID", "EARNED", "SHARED", "OWNED"];
-    const mediaType = validMediaTypes.includes(json.mediaType)
-      ? json.mediaType
-      : "OWNED";
+    if (!validMediaTypes.includes(json.mediaType)) {
+      console.warn(
+        `[Classifier] Invalid mediaType "${json.mediaType}", using fallback`
+      );
+      return fallbackClassification(title, sourceUrl);
+    }
+
+    // confidenceのバリデーション（0も有効な値として扱う）
+    let confidence = 0.5;
+    if (typeof json.confidence === "number" && isFinite(json.confidence)) {
+      confidence = Math.max(0, Math.min(1, json.confidence));
+    }
 
     return {
-      mediaType,
+      mediaType: json.mediaType,
       channel: json.channel || "不明",
       summary: json.summary || title.slice(0, 50),
-      confidence: json.confidence || 0.5,
+      confidence,
     };
   } catch (error) {
     console.error("[Classifier] Failed to classify:", error);
