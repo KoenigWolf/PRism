@@ -6,25 +6,31 @@ const globalForPrisma = globalThis as unknown as {
 
 export const basePrisma = globalForPrisma.prisma ?? new PrismaClient();
 
+// テナントフィルタなしのPrismaクライアント（管理系操作用）
+// Tenantテーブル操作やWebhook処理など、テナント横断的な処理に使用
+export const prisma = basePrisma;
+
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = basePrisma;
 }
 
-// Models that have tenantId field
+// Models that have tenantId field (lowercase for comparison)
 const TENANT_MODELS = [
   "user",
   "company",
   "brand",
-  "prItem",
+  "pritem",
   "tag",
-  "prItemTag",
+  "pritemtag",
   "note",
-  "auditLog",
+  "auditlog",
+  "insight",
 ] as const;
 
 type TenantModel = (typeof TENANT_MODELS)[number];
 
-function isTenantModel(model: string): model is TenantModel {
+// Prismaはモデル名をPascalCaseで渡すため、小文字に変換して比較
+function isTenantModel(model: string): boolean {
   return TENANT_MODELS.includes(model.toLowerCase() as TenantModel);
 }
 

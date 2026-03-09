@@ -7,6 +7,7 @@ async function main() {
   console.log("Seeding database...");
 
   // Clean up existing data
+  await prisma.insight.deleteMany();
   await prisma.prItemTag.deleteMany();
   await prisma.note.deleteMany();
   await prisma.auditLog.deleteMany();
@@ -17,11 +18,12 @@ async function main() {
   await prisma.user.deleteMany();
   await prisma.tenant.deleteMany();
 
-  // Create Tenant A: "デモPR株式会社"
+  // Create Tenant A: "デモPR株式会社" (Professional plan)
   const tenantA = await prisma.tenant.create({
     data: {
       name: "デモPR株式会社",
-      plan: "pro",
+      slug: "demo-pr",
+      plan: "professional",
     },
   });
 
@@ -191,10 +193,35 @@ async function main() {
     });
   }
 
-  // Create Tenant B: "B社マーケティング" (empty tenant for testing)
+  // Create sample Insights
+  await prisma.insight.create({
+    data: {
+      content: `## 競合分析サマリー
+
+### CLAYGEの強み
+- SNSでのUGC（ユーザー生成コンテンツ）が活発
+- 美容系インフルエンサーからの高評価が継続
+- TikTokでの動画バイラルが若年層へのリーチに貢献
+
+### BOTANISTの強み
+- サステナブルブランディングが時代にマッチ
+- リブランディングによる話題性の創出
+- 美容メディアでの高評価ランキング入り
+
+### 推奨アクション
+1. CLAYGEはTikTok施策を継続強化
+2. BOTANISTはサステナビリティストーリーを深掘り
+3. 両ブランドともYouTubeでの比較レビュー対策を検討`,
+      brandIds: [clayge.id, botanist.id],
+      tenantId: tenantA.id,
+    },
+  });
+
+  // Create Tenant B: "B社マーケティング" (Starter plan for testing)
   const tenantB = await prisma.tenant.create({
     data: {
       name: "B社マーケティング",
+      slug: "b-marketing",
       plan: "starter",
     },
   });
@@ -209,10 +236,36 @@ async function main() {
     },
   });
 
+  // Create Tenant C: "エンタープライズ株式会社" (Enterprise plan)
+  const tenantC = await prisma.tenant.create({
+    data: {
+      name: "エンタープライズ株式会社",
+      slug: "enterprise-corp",
+      plan: "enterprise",
+      ssoEnabled: true,
+      ssoProvider: "saml",
+    },
+  });
+
+  await prisma.user.create({
+    data: {
+      email: "admin@enterprise.example.com",
+      hashedPassword,
+      name: "管理者",
+      role: Role.OWNER,
+      tenantId: tenantC.id,
+    },
+  });
+
   console.log("Seeding completed!");
+  console.log("");
   console.log("Login credentials:");
-  console.log("  Tenant A: demo@prism.example.com / password123");
-  console.log("  Tenant B: test@prism.example.com / password123");
+  console.log("  Tenant A (Professional): demo@prism.example.com / password123");
+  console.log("  Tenant B (Starter):      test@prism.example.com / password123");
+  console.log("  Tenant C (Enterprise):   admin@enterprise.example.com / password123");
+  console.log("");
+  console.log("SSO URLs:");
+  console.log("  Tenant C SAML: /api/auth/sso/enterprise-corp");
 }
 
 main()

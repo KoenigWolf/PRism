@@ -18,10 +18,9 @@ interface PrItem {
   title: string;
   sourceType: string;
   mediaType: MediaType;
-  publishedAt: Date | null;
-  brand: {
-    name: string;
-  };
+  publishedAt: Date | string | null;
+  brand?: { name: string };
+  brandName?: string;
 }
 
 interface RecentPrItemsTableProps {
@@ -63,7 +62,7 @@ export function RecentPrItemsTable({ prItems }: RecentPrItemsTableProps) {
                 <TableCell className="max-w-[200px] truncate font-medium">
                   {item.title}
                 </TableCell>
-                <TableCell>{item.brand.name}</TableCell>
+                <TableCell>{item.brandName || item.brand?.name}</TableCell>
                 <TableCell>
                   <Badge
                     style={{
@@ -76,7 +75,13 @@ export function RecentPrItemsTable({ prItems }: RecentPrItemsTableProps) {
                 </TableCell>
                 <TableCell>
                   {item.publishedAt
-                    ? format(item.publishedAt, "M月d日", { locale: ja })
+                    ? format(
+                        typeof item.publishedAt === "string"
+                          ? new Date(item.publishedAt)
+                          : item.publishedAt,
+                        "M月d日",
+                        { locale: ja }
+                      )
                     : "-"}
                 </TableCell>
               </TableRow>

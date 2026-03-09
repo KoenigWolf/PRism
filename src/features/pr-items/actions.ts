@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getTenantPrisma } from "@/lib/prisma";
 import { authorize } from "@/lib/authorization";
 import { captureError } from "@/lib/logger";
+import { writeAuditLog } from "@/lib/audit";
 import type { ActionResult } from "@/types/actions";
 import { prItemFormSchema, type PrItemFormInput } from "./schemas";
 
@@ -37,6 +38,14 @@ export async function createPrItem(
 
     revalidatePath("/pr-items");
     revalidatePath("/");
+
+    // 監査ログ
+    await writeAuditLog({
+      action: "CREATE",
+      entityType: "PrItem",
+      entityId: prItem.id,
+      changes: { title: prItem.title, mediaType: prItem.mediaType },
+    });
 
     return { success: true, data: { id: prItem.id } };
   } catch (error) {
@@ -78,6 +87,14 @@ export async function updatePrItem(
     revalidatePath(`/pr-items/${id}`);
     revalidatePath("/");
 
+    // 監査ログ
+    await writeAuditLog({
+      action: "UPDATE",
+      entityType: "PrItem",
+      entityId: id,
+      changes: { title: parsed.data.title, mediaType: parsed.data.mediaType },
+    });
+
     return { success: true };
   } catch (error) {
     captureError(error as Error, { action: "updatePrItem", id, input });
@@ -97,6 +114,13 @@ export async function deletePrItem(id: string): Promise<ActionResult> {
 
     revalidatePath("/pr-items");
     revalidatePath("/");
+
+    // 監査ログ
+    await writeAuditLog({
+      action: "DELETE",
+      entityType: "PrItem",
+      entityId: id,
+    });
 
     return { success: true };
   } catch (error) {
