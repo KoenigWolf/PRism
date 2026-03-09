@@ -61,6 +61,7 @@ model Tenant {
   auditLogs AuditLog[]
   insights  Insight[]
   rssSources RssSource[]
+  collectedPrItems CollectedPrItem[]
 }
 
 model User {
@@ -295,6 +296,7 @@ model CollectedPrItem {
   rssSource   RssSource @relation(fields: [rssSourceId], references: [id], onDelete: Cascade)
 
   tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@unique([rssSourceId, guid])
   @@index([tenantId])

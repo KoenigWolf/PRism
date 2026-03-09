@@ -7,9 +7,17 @@ import { classifyPrItem } from "@/lib/pr-classifier";
 const CRON_SECRET = process.env.CRON_SECRET;
 
 export async function GET(request: Request) {
-  // 認証チェック
+  // 認証チェック（CRON_SECRET未設定時はエラー）
+  if (!CRON_SECRET) {
+    console.error("[Cron] CRON_SECRET is not configured");
+    return NextResponse.json(
+      { error: "Cron secret not configured" },
+      { status: 500 }
+    );
+  }
+
   const authHeader = request.headers.get("authorization");
-  if (CRON_SECRET && authHeader !== `Bearer ${CRON_SECRET}`) {
+  if (authHeader !== `Bearer ${CRON_SECRET}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -40,6 +48,8 @@ async function collectPrItems() {
   const errors: string[] = [];
 
   for (const source of rssSources) {
+    let newItemsCount = 0;
+
     try {
       // RSSフィードを取得
       const items = await fetchRssFeed(source.url);
@@ -71,6 +81,7 @@ async function collectPrItems() {
           },
         });
 
+        newItemsCount++;
         totalCollected++;
 
         // Claude APIで分類（ANTHROPIC_API_KEYがある場合のみ）
@@ -103,12 +114,12 @@ async function collectPrItems() {
         }
       }
 
-      // ソースの最終取得日時を更新
+      // ソースの最終取得日時を更新（新規アイテム数でインクリメント）
       await prisma.rssSource.update({
         where: { id: source.id },
         data: {
           lastFetched: new Date(),
-          fetchCount: { increment: items.length },
+          fetchCount: { increment: newItemsCount },
         },
       });
     } catch (sourceError) {

@@ -53,8 +53,14 @@ JSONのみを出力してください。`;
       response.content[0].type === "text" ? response.content[0].text : "";
     const json = JSON.parse(text.replace(/```json\n?|\n?```/g, "").trim());
 
+    // MediaTypeのバリデーション
+    const validMediaTypes: MediaType[] = ["PAID", "EARNED", "SHARED", "OWNED"];
+    const mediaType = validMediaTypes.includes(json.mediaType)
+      ? json.mediaType
+      : "OWNED";
+
     return {
-      mediaType: json.mediaType as MediaType,
+      mediaType,
       channel: json.channel || "不明",
       summary: json.summary || title.slice(0, 50),
       confidence: json.confidence || 0.5,

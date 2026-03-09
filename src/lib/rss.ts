@@ -21,11 +21,18 @@ const parser = new Parser({
  * RSSフィードを取得してパースする
  */
 export async function fetchRssFeed(url: string): Promise<RssItem[]> {
+  // URLスキームバリデーション（SSRF対策）
+  const parsedUrl = new URL(url);
+  if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+    throw new Error(`Invalid URL scheme: ${parsedUrl.protocol}`);
+  }
+
   try {
     const feed = await parser.parseURL(url);
 
-    return feed.items.map((item) => ({
-      guid: item.guid || item.link || item.title || "",
+    return feed.items.map((item, index) => ({
+      // guidのフォールバック: 空文字列ではなくインデックスベースのIDを使用
+      guid: item.guid || item.link || item.title || `item-${index}-${Date.now()}`,
       title: item.title || "",
       link: item.link,
       contentSnippet: item.contentSnippet || item.content,

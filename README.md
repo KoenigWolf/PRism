@@ -37,6 +37,7 @@ PRism は、競合ブランドの PR 施策を PESO モデル（Paid / Earned / 
 
 ### エンタープライズ機能
 
+- **RSS 自動収集** — 競合のプレスリリースを RSS から自動取得・PESO 分類
 - **AI インサイト** — Claude API による競合分析・戦略提案の自動生成
 - **PDF エクスポート** — 比較レポートを PDF 形式で出力
 - **課金管理** — Stripe 連携によるサブスクリプション管理
@@ -69,6 +70,7 @@ src/
 │   └── api/                    # API ルート
 │       ├── auth/               #   認証 (NextAuth + SSO)
 │       ├── billing/            #   課金 (Stripe)
+│       ├── cron/               #   定期実行 (RSS収集)
 │       ├── export/             #   エクスポート (CSV/PDF)
 │       ├── insights/           #   AI インサイト
 │       └── webhooks/           #   Webhook
@@ -80,7 +82,8 @@ src/
 │   ├── compare/                #   比較
 │   ├── dashboard/              #   ダッシュボード
 │   ├── insights/               #   AI インサイト
-│   └── pr-items/               #   PR 施策
+│   ├── pr-items/               #   PR 施策
+│   └── rss-sources/            #   RSS ソース管理
 │   # 各モジュール構成:
 │   #   actions.ts     - Server Actions
 │   #   queries.ts     - データ取得
@@ -167,7 +170,12 @@ ANTHROPIC_API_KEY="<Anthropic API キー>"
 STRIPE_SECRET_KEY="<Stripe シークレットキー>"
 STRIPE_WEBHOOK_SECRET="<Stripe Webhook シークレット>"
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY="<Stripe 公開キー>"
+
+# RSS自動収集（本番環境では必須）
+CRON_SECRET="<openssl rand -base64 32 で生成>"
 ```
+
+> CRON_SECRET は RSS 自動収集エンドポイントの認証に使用されます。本番環境では必ず設定してください。
 
 ### 4. PostgreSQL を起動
 
@@ -228,6 +236,7 @@ npm run dev
 | `/api/auth/sso/[tenant]/callback` | GET/POST | SSO コールバック |
 | `/api/billing/checkout` | POST | Stripe Checkout セッション作成 |
 | `/api/billing/portal` | POST | Stripe カスタマーポータル |
+| `/api/cron/collect-pr` | GET/POST | RSS 自動収集（Cron 実行） |
 | `/api/export` | POST | CSV エクスポート |
 | `/api/export/pdf` | POST | PDF エクスポート |
 | `/api/insights` | POST | AI インサイト生成 |

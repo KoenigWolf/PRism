@@ -6,10 +6,17 @@ import { getBrands } from "@/features/brands/queries";
 import { Rss } from "lucide-react";
 
 export default async function RssSettingsPage() {
-  const [rssSources, brands] = await Promise.all([
+  const [rssSources, brandsData] = await Promise.all([
     getRssSources(),
     getBrands(),
   ]);
+
+  // RssSourceForm に必要なプロパティのみを抽出
+  const brands = brandsData.map((b) => ({
+    id: b.id,
+    name: b.name,
+    company: { name: b.company.name },
+  }));
 
   return (
     <div className="space-y-6">
