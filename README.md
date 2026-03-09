@@ -54,7 +54,7 @@ PRism は、競合ブランドの PR 施策を PESO モデル（Paid / Earned / 
 
 ## プロジェクト構成
 
-```
+```text
 src/
 ├── app/                        # Next.js App Router
 │   ├── (auth)/                 # 認証グループ
