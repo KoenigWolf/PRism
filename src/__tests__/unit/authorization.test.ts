@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { hasPermission } from "./authorization";
+import { hasPermission } from "@/lib/authorization";
 
 describe("hasPermission", () => {
   it("OWNER should have all permissions", () => {
